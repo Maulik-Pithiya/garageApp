@@ -1,0 +1,106 @@
+@import "tailwindcss";
+
+
+
+.hero-gradient {
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+}
+
+.service-card:hover {
+  transform: translateY(-5px);
+  transition: all 0.3s ease;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  color: white;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+}
+
+
+/* Vehicle page */
+
+
+.vehicle-card:hover {
+  transform: translateY(-5px);
+  transition: all 0.3s ease;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+select {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 0.5rem center;
+  background-repeat: no-repeat;
+  background-size: 1.5em 1.5em;
+  padding-right: 2.5rem;
+  appearance: none;
+}
+
+input[type="radio"]:checked+label {
+  background-color: #3b82f6;
+  color: white;
+  border-color: #3b82f6;
+}
+
+.vehicle-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+@media (max-width: 1024px) {
+  .vehicle-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .vehicle-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* product page */
+.product-image {
+  height: 200px;
+  object-fit: cover;
+}
+
+.car-card {
+  transition: all 0.3s ease;
+  border: 1px solid #e5e7eb;
+}
+
+.car-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+.car-image {
+  height: 200px;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.car-card:hover .car-image {
+  transform: scale(1.03);
+}
+
+.active {
+  font-weight: 400;
+  color: oklch(54.6% 0.245 262.881);
+  border-bottom: 2px solid oklch(54.6% 0.245 262.881);
+}
+
+@media (max-width: 768px) {
+.active {
+  border-bottom:none;
+}
+  /* body {
+  font-family: "Inter", sans-serif;
+  } */
+}
