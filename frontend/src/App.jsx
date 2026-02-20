@@ -1,5 +1,4 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { useState } from 'react';
 
 import './index.css'
 import Navbar from './Components/Navbar'; 
@@ -8,15 +7,19 @@ import Footer from './Components/Footer';
 import VehicleServices from './Components/VehicleServices';
 import Product from './Components/Product';
 import Admin from './Components/Admin';
+import Test from './Components/Test';
+import { Toaster } from 'react-hot-toast';
+
 
 function App() {
 
   return (
-    <>
+    
       <BrowserRouter>
+      <Toaster  toastOptions={{duration: 3000}} />
         <Navbar />
         <Routes>
-         
+       
           {/* page 1 */}
           <Route path="/" element={<Herosection />} />
 
@@ -28,13 +31,13 @@ function App() {
 
           {/* page 3 */}
           <Route path="/admin" element={<Admin />} />
+          
+          <Route path="/test" element={<Test />} />
 
         </Routes>
         <Footer />
       </BrowserRouter>
 
-
-    </>
   )
 }
 export default App

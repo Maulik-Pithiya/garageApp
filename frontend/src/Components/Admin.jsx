@@ -7,8 +7,6 @@ import axio from 'axios';
 const Admin = () => {
     const API = "http://localhost:8000/api";
 
-
-    
         const [fetchedData, setData] = React.useState([]);
         
         useEffect(() => {    

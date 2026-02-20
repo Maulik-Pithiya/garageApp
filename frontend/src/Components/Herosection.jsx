@@ -2,8 +2,42 @@ import React from 'react'
 import business_photo from '../assets/Business deal-bro.png'
 import { Bike, Car, ShoppingCart, Send, MapPin, Clock, Phone, CheckCircle } from "lucide-react";
 
+import { useForm } from "react-hook-form"
+import axios from 'axios';
+import { toast } from 'react-hot-toast';
+
+
+
+
 
 export default function Herosection() {
+   
+    
+  const {
+    register,
+    handleSubmit,
+    formState: { isSubmitting },
+    reset,
+  } = useForm();
+
+  
+  const submitForm = async (data) => {
+      console.log("Form Data:", data);
+      
+  try {
+    const response = await axios.post("http://localhost:8000/api/message/", data);
+    console.log("Response:", response.data);
+    toast.success("Message Sent Successfully", {position: "top-center"});
+    reset();
+
+    
+  } catch (error) {
+    console.error("Error:", error);
+    toast.error("Failed to send message. Please try again.");  }
+};
+    
+
+
     return (
         <>
             {/* <!-- Hero Section --> */}
@@ -111,39 +145,39 @@ export default function Herosection() {
                     <div className="bg-white rounded-xl shadow-lg p-8">
                         <h3 className="text-2xl font-semibold text-gray-800 mb-6">Send us a Message</h3>
 
-                        <form id="contact-form" className="space-y-6">
+                        <form id="contact-form" className="space-y-6" onSubmit={handleSubmit(submitForm)}>
                             <div>
                                 <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">Full Name *</label>
-                                <input type="text" id="name"
+                                <input type="text" id="name" {...register("name")}
                                     className="w-full bg-gray-50 border border-gray-300 rounded-lg py-3 px-4 input-focus transition-colors focus:outline-none"
                                     placeholder="" required />
                             </div>
 
                             <div>
                                 <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
-                                <input type="email" id="email"
+                                <input type="email" id="email" {...register("email")}
                                     className="w-full bg-gray-50 border border-gray-300 rounded-lg py-3 px-4 input-focus transition-colors focus:outline-none"
                                     placeholder="" />
                             </div>
 
                             <div>
                                 <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">Phone Number *</label>
-                                <input type="tel" id="phone"
+                                <input type="tel" id="phone" {...register("phone")}
                                     className="w-full bg-gray-50 border border-gray-300 rounded-lg py-3 px-4 input-focus transition-colors focus:outline-none"
                                     placeholder="" required />
                             </div>
 
                             <div>
                                 <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-2">Message</label>
-                                <textarea id="message" rows="4"
+                                <textarea id="message" rows="4" {...register("message")}
                                     className="w-full bg-gray-50 border border-gray-300 rounded-lg py-3 px-4 input-focus transition-colors focus:outline-none resize-none"
                                     placeholder="Please provide details about your inquiry..."></textarea>
                             </div>
 
-                            <button type="submit"
+                            <button type="submit" disabled={isSubmitting}
                                 className="w-full btn-primary py-3 px-6 rounded-lg font-medium transition-colors flex items-center justify-center">
                                 <Send className="w-5 h-5 mr-2" />
-                                Send Message
+                                {isSubmitting ? "Sending..." : "Send Message"}
                             </button>
                         </form>
                     </div>
