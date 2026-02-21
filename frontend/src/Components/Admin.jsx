@@ -1,7 +1,8 @@
 import React from 'react';
-import { Users, Search, Edit, Trash2, Users as Settings } from 'lucide-react';
+import { Users, Search , Trash2, Users as Settings } from 'lucide-react';
 import { useEffect } from 'react';
-import axio from 'axios';
+import axios from 'axios';
+import toast from 'react-hot-toast';
 
 
 const Admin = () => {
@@ -12,7 +13,7 @@ const Admin = () => {
         useEffect(() => {    
             const fetchData = async () => {
                 try {
-                    const response = await axio.get(`${API}/allmessages`);
+                    const response = await axios.get(`${API}/allmessages`);
                     setData(response.data);
                 } catch (error) {
                     console.log("Error fetching messages:", error);
@@ -20,7 +21,36 @@ const Admin = () => {
             }
             fetchData();
         }, []);
-   
+
+        //delete User
+        const deleteUserMessage = async (id) => {
+          // console.log("Deleting user with ID:", id);
+          try {
+            await axios.delete(`${API}/delete/message/${id}`);
+            // toast.success("User deleted successfully", {icon: ''});
+
+            toast.success('Message deleted successfully!', {
+              style: {
+                borderRadius: '8px',
+                background: '#f0fdf4',        // light green background
+                color: '#166534',              // dark green text (Tailwind green-800)
+                padding: '12px 16px',
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+                border: '1px solid #86efac',   // light green border (Tailwind green-300)
+                fontFamily: 'system-ui, sans-serif',
+              },
+              iconTheme: {
+                primary: '#16a34a',            // green check icon (Tailwind green-600)
+                secondary: '#f0fdf4',          // background for the icon (matches toast bg)
+              },
+            });
+
+            setData(prevData => prevData.filter(user => user._id !== id));
+          } catch (error) {
+            // console.error("Error deleting user:", error);
+            toast.error("Failed to delete Message");
+          }
+        };
   
     return (
     <div className="min-h-screen bg-gray-50">
@@ -57,7 +87,7 @@ const Admin = () => {
               <Users className="w-6 h-6 text-blue-600" />
             </div>
             <div>
-              <p className="text-sm font-medium text-gray-500">Total Customers</p>
+              <p className="text-sm font-medium text-gray-500">Total Messages</p>
               <p className="text-2xl font-semibold text-gray-900">{fetchedData.length}</p>
             </div>
           </div>
@@ -76,7 +106,6 @@ const Admin = () => {
         </div>
 
         {/* Customers Table */}
-
         {fetchedData.length !== 0 ? 
 
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
@@ -93,18 +122,18 @@ const Admin = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100 ">
-                {fetchedData.map((fetchedData, index) => (
+                {fetchedData.map((item, index) => (
                   
-                  <tr key={fetchedData._id} className="hover:bg-gray-100 transition duration-150">
+                  <tr key={item._id} className="hover:bg-gray-100 transition duration-150">
                     <td className="px-6 py-4 text-sm font-medium text-gray-700">{index + 1}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{fetchedData.name}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{fetchedData.email}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{fetchedData.phone}</td>
-                    <td className="px-6 py-4 text-sm text-gray-700 min-w-[200px] max-w-[300px]">{fetchedData.message}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{item.name}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{item.email}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{item.phone}</td>
+                    <td className="px-6 py-4 text-sm text-gray-700 min-w-[200px] max-w-[300px]">{item.message}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                       
                       <div className="flex items-center justify-center gap-3">  
-                        <button className="text-red-600 hover:text-red-800 transition" title="Delete">
+                        <button className="text-red-600 hover:text-red-800 transition" title="Delete" onClick={() => deleteUserMessage(item._id)}>
                           <Trash2 className="w-4 h-4" />
                         </button>
                       </div>

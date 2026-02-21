@@ -7,12 +7,8 @@ import axios from 'axios';
 import { toast } from 'react-hot-toast';
 
 
-
-
-
 export default function Herosection() {
    
-    
   const {
     register,
     handleSubmit,
@@ -22,22 +18,31 @@ export default function Herosection() {
 
   
   const submitForm = async (data) => {
-      console.log("Form Data:", data);
+    //   console.log("Form Data:", data);
       
   try {
     const response = await axios.post("http://localhost:8000/api/message/", data);
-    console.log("Response:", response.data);
-    toast.success("Message Sent Successfully", {position: "top-center"});
+    // console.log("Response:", response.data);
+      toast.success("Message Sent Successfully", {
+          position: "top-center",
+          style: {
+              border: "1px solid #2563eb", // Tailwind blue-600
+              padding: "12px 16px",
+              color: "#2563eb",
+              backgroundColor: "#f0f9ff", // Tailwind blue-50 (soft background)
+              borderRadius: "8px",
+              fontWeight: "500",
+          },
+          icon: <Send size={22} color="#2563eb" />,
+      });
+
     reset();
 
-    
   } catch (error) {
-    console.error("Error:", error);
+    // console.error("Error:", error);
     toast.error("Failed to send message. Please try again.");  }
 };
     
-
-
     return (
         <>
             {/* <!-- Hero Section --> */}

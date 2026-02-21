@@ -16,8 +16,8 @@ function App() {
   return (
     
       <BrowserRouter>
-      <Toaster  toastOptions={{duration: 3000}} />
         <Navbar />
+        <Toaster  toastOptions={{duration: 3000}} />
         <Routes>
        
           {/* page 1 */}
