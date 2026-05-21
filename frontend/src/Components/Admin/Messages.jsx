@@ -1,17 +1,14 @@
-import React from 'react';
+import React from 'react'
 import { Users, Search , Trash2, Users as Settings } from 'lucide-react';
 import { useEffect } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
-
-const Test = () => {
-
+const Messages = () => {
   
-
 const API = "http://localhost:8000/api";
 
-      const [fetchedData, setData] = React.useState([]);
+        const [fetchedData, setData] = React.useState([]);
         
         useEffect(() => {    
             const fetchData = async () => {
@@ -25,10 +22,40 @@ const API = "http://localhost:8000/api";
             fetchData();
         }, []);
 
+        //delete User
+        const deleteUserMessage = async (id) => {
+          // console.log("Deleting user with ID:", id);
+          try {
+            await axios.delete(`${API}/delete/message/${id}`);
+            // toast.success("User deleted successfully", {icon: ''});
+
+            toast.success('Message deleted successfully!', {
+              style: {
+                borderRadius: '8px',
+                background: '#f0fdf4',        // light green background
+                color: '#166534',              // dark green text (Tailwind green-800)
+                padding: '12px 16px',
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+                border: '1px solid #86efac',   // light green border (Tailwind green-300)
+                fontFamily: 'system-ui, sans-serif',
+              },
+              iconTheme: {
+                primary: '#16a34a',            // green check icon (Tailwind green-600)
+                secondary: '#f0fdf4',          // background for the icon (matches toast bg)
+              },
+            });
+
+            setData(prevData => prevData.filter(user => user._id !== id));
+          } catch (error) {
+            // console.error("Error deleting user:", error);
+            toast.error("Failed to delete Message");
+          }
+        };
   return (
-    <>
-    
-         {/* Customers Table */}
+   <>
+   {/* Customers Table */}
+         <h1 className='text-2xl mb-5 font-bold text-gray-800'>Messages</h1>
+
         {fetchedData.length !== 0 ? 
 
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
@@ -79,8 +106,8 @@ const API = "http://localhost:8000/api";
         
         :<div className='text-2xl font-bold text-blue-600 text-center sm:mt-10 sm:mb-0'>No Records </div>}
       
-    </>
+   </>
   )
 }
 
-export default Test
+export default Messages

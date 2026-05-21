@@ -1,34 +1,4 @@
-import React from 'react';
-import { Users, Search , Trash2, Users as Settings } from 'lucide-react';
-import { useEffect } from 'react';
-import axios from 'axios';
-import toast from 'react-hot-toast';
-
-
-const Test = () => {
-
-  
-
-const API = "http://localhost:8000/api";
-
-      const [fetchedData, setData] = React.useState([]);
-        
-        useEffect(() => {    
-            const fetchData = async () => {
-                try {
-                    const response = await axios.get(`${API}/allmessages`);
-                    setData(response.data);
-                } catch (error) {
-                    console.log("Error fetching messages:", error);
-                }
-            }
-            fetchData();
-        }, []);
-
-  return (
-    <>
-    
-         {/* Customers Table */}
+   {/* Customers Table */}
         {fetchedData.length !== 0 ? 
 
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
@@ -79,8 +49,3 @@ const API = "http://localhost:8000/api";
         
         :<div className='text-2xl font-bold text-blue-600 text-center sm:mt-10 sm:mb-0'>No Records </div>}
       
-    </>
-  )
-}
-
-export default Test

@@ -25,7 +25,7 @@ function Navbar() {
                         <NavLink to="/" className="text-gray-600 hover:text-blue-600 transition-colors py-2">Home</NavLink>
                         <NavLink to="vehicle" className="text-gray-600 hover:text-blue-600 transition-colors py-2">Vehicles</NavLink>
                         <NavLink to="product" className="text-gray-600 hover:text-blue-600 transition-colors py-2">Products</NavLink>
-                        <NavLink to="admin" className="text-gray-600 hover:text-blue-600 transition-colors py-2">Admin</NavLink>
+                        <NavLink to="admin/dashboard" className="text-gray-600 hover:text-blue-600 transition-colors py-2">Admin</NavLink>
                     </div>
 
                     {/* CTA Button */}
