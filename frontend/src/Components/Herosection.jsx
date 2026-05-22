@@ -8,41 +8,42 @@ import { toast } from 'react-hot-toast';
 
 
 export default function Herosection() {
-   
-  const {
-    register,
-    handleSubmit,
-    formState: { isSubmitting },
-    reset,
-  } = useForm();
 
-  
-  const submitForm = async (data) => {
-    //   console.log("Form Data:", data);
-      
-  try {
-    const response = await axios.post("http://localhost:8000/api/message/", data);
-    // console.log("Response:", response.data);
-      toast.success("Message Sent Successfully", {
-          position: "top-center",
-          style: {
-              border: "1px solid #2563eb", // Tailwind blue-600
-              padding: "12px 16px",
-              color: "#2563eb",
-              backgroundColor: "#f0f9ff", // Tailwind blue-50 (soft background)
-              borderRadius: "8px",
-              fontWeight: "500",
-          },
-          icon: <Send size={22} color="#2563eb" />,
-      });
+    const {
+        register,
+        handleSubmit,
+        formState: { isSubmitting },
+        reset,
+    } = useForm();
 
-    reset();
 
-  } catch (error) {
-    // console.error("Error:", error);
-    toast.error("Failed to send message. Please try again.");  }
-};
-    
+    const submitForm = async (data) => {
+        //   console.log("Form Data:", data);
+
+        try {
+            const response = await axios.post("http://localhost:8000/api/message/", data);
+            // console.log("Response:", response.data);
+            toast.success("Message Sent Successfully", {
+                position: "top-center",
+                style: {
+                    border: "1px solid #2563eb", // Tailwind blue-600
+                    padding: "12px 16px",
+                    color: "#2563eb",
+                    backgroundColor: "#f0f9ff", // Tailwind blue-50 (soft background)
+                    borderRadius: "8px",
+                    fontWeight: "500",
+                },
+                icon: <Send size={22} color="#2563eb" />,
+            });
+
+            reset();
+
+        } catch (error) {
+            // console.error("Error:", error);
+            toast.error("Failed to send message. Please try again.");
+        }
+    };
+
     return (
         <>
             {/* <!-- Hero Section --> */}
@@ -67,7 +68,7 @@ export default function Herosection() {
                         </div>
                         <div className="md:w-1/2 flex justify-center md:ms-8 ms-0">
                             <div className="relative">
-                                <img src={business_photo} alt="Garage Interior" className="w-[30rem] h-full" />
+                                <img src={business_photo} alt="Garage Interior" className="w-120 h-full" />
                             </div>
                         </div>
                     </div>
@@ -152,7 +153,7 @@ export default function Herosection() {
 
                         <form id="contact-form" className="space-y-6" onSubmit={handleSubmit(submitForm)}>
                             <div>
-                                <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">Full Name *</label>
+                                <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">Full Name <span className="text-red-500">*</span></label>
                                 <input type="text" id="name" {...register("name")}
                                     className="w-full bg-gray-50 border border-gray-300 rounded-lg py-3 px-4 input-focus transition-colors focus:outline-none"
                                     placeholder="" required />
@@ -166,17 +167,17 @@ export default function Herosection() {
                             </div>
 
                             <div>
-                                <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">Phone Number *</label>
+                                <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">Phone Number <span className="text-red-500">*</span></label>
                                 <input type="tel" id="phone" {...register("phone")}
                                     className="w-full bg-gray-50 border border-gray-300 rounded-lg py-3 px-4 input-focus transition-colors focus:outline-none"
-                                    placeholder="" required />
+                                    placeholder="" required minLength="10" />
                             </div>
 
                             <div>
                                 <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-2">Message</label>
                                 <textarea id="message" rows="4" {...register("message")}
                                     className="w-full bg-gray-50 border border-gray-300 rounded-lg py-3 px-4 input-focus transition-colors focus:outline-none resize-none"
-                                    placeholder="Please provide details about your inquiry..."></textarea>
+                                    placeholder="Please provide details about your inquiry..." minLength="5" maxLength="200"></textarea>
                             </div>
 
                             <button type="submit" disabled={isSubmitting}
@@ -284,7 +285,7 @@ export default function Herosection() {
                             </ul>
                         </div>
                     </div>
-                    
+
                 </div>
             </div>
         </>

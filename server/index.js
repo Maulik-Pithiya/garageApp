@@ -1,7 +1,7 @@
 import express from "express";
 import bodyParser from "body-parser";
 import configDotenv from "dotenv";
-import mangoose from "mongoose";
+import mongoose from "mongoose";
 import route from "./routes/userRoutes.js";
 import cors from 'cors'
 
@@ -14,7 +14,7 @@ configDotenv.config();
 const PORT = process.env.PORT || 7000;
 const MONGOURL = process.env.MONGO_URL;
 
-mangoose
+mongoose
     .connect(MONGOURL)
     .then(() => {
         console.log("\nDB is connected");
@@ -24,7 +24,7 @@ mangoose
     })
     .catch((error) => console.log(error));
 
-    app.use("/api",route);
+app.use("/api", route);
 
-    
-    // node indexedDB.js
+
+// node indexedDB.js

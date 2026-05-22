@@ -9,6 +9,12 @@ function Navbar() {
     const toggleMobileMenu = () => {
         setIsMobileMenuOpen(!isMobileMenuOpen);
     };
+    const closeMenu = () => {
+        setIsMobileMenuOpen(false);
+        window.scrollTo({
+            top: 0,
+        });
+    };
 
     return (
         <nav className="bg-white shadow-sm sticky top-0 z-50">
@@ -49,17 +55,37 @@ function Navbar() {
                 {isMobileMenuOpen && (
                     <div className="md:hidden pb-4 border-t border-gray-200">
                         <div className="flex flex-col space-y-3 mt-4">
-                            <a href="/" className="text-gray-600 active:text-blue-600 transition-colors py-2">Home</a>
-                            <a href="vehicle" className="text-gray-600 transition-colors py-2">Vehicles</a>
-                            <a href="product" className="text-gray-600 transition-colors py-2">Products</a>
-                            <a href="admin" className="text-gray-600 transition-colors py-2">Admin</a>
+                            <NavLink to="/" className={({ isActive }) =>
+                                `px-4 py-3 rounded-xl ${isActive
+                                    ? "bg-blue-100 text-blue-600 "
+                                    : "text-gray-600"
+                                }`} onClick={closeMenu}>Home</NavLink>
+
+                            <NavLink to="/vehicle" className={({ isActive }) =>
+                                `px-4 py-3 rounded-xl transition-all duration-200 ${isActive
+                                    ? "bg-blue-100 text-blue-600"
+                                    : "text-gray-600"
+                                }`} onClick={closeMenu}>Vehicles</NavLink>
+
+                            <NavLink to="/product" className={({ isActive }) =>
+                                `px-4 py-3 rounded-xl transition-all duration-200 ${isActive
+                                    ? "bg-blue-100 text-blue-600"
+                                    : "text-gray-600"
+                                }`} onClick={closeMenu}>Products</NavLink>
+
+                            <NavLink to="/admin" className={({ isActive }) =>
+                                `px-4 py-3 rounded-xl transition-all duration-200 ${isActive
+                                    ? "bg-blue-100 text-blue-600"
+                                    : "text-gray-600"
+                                }`} onClick={closeMenu}>Admin</NavLink>
+
                             <a href="tel:+919426041999" className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg transition-colors text-center mt-2">Contact Us</a>
                         </div>
                     </div>
                 )}
             </div>
         </nav>
-    );
+    )
 }
 
 export default Navbar;

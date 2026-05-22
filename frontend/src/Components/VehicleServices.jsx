@@ -52,10 +52,10 @@ export default function VehicleServices() {
                             <h3 className="text-lg font-bold text-gray-800">Want to sell your vehicle?</h3>
                             <p className="text-gray-600">Get a fair price for your vehicle with our easy selling process.</p>
                         </div>
-                        <a href="sell-vehicle.html"
-                            className="bg-white text-blue-600 border border-blue-200 hover:bg-blue-600 hover:text-white py-2 px-6 rounded-lg transition-colors font-medium whitespace-nowrap">
+                        <div
+                            className="border border-blue-200 bg-blue-600 text-white py-2 px-6 rounded-lg transition-colors font-medium whitespace-nowrap">
                             Get Quote
-                        </a>
+                        </div>
                     </div>
 
                     {/* <!-- filter --> */}
@@ -185,13 +185,13 @@ export default function VehicleServices() {
                                             hover:shadow-[0_14px_35px_-14px_rgba(37,99,235,0.75)]
                                             active:translate-y-0 active:scale-[0.98]
                                             focus:outline-none focus:ring-4 focus:ring-blue-300/40">
-                                        
+
                                         {/* Shine effect */}
                                         <span
                                             className="pointer-events-none absolute inset-0
                                             opacity-0 group-hover:opacity-100
                                             transition-opacity duration-300
-                                            bg-gradient-to-r from-white/30 via-white/10 to-transparent"/>
+                                            bg-linear-to-r from-white/30 via-white/10 to-transparent"/>
                                         <span className="relative transition-colors duration-300">View Details</span>
                                         <Car className="relative w-5 h-5 text-blue-600 transition-all duration-300 group-hover:text-white group-hover:translate-x-1" />
                                     </button>

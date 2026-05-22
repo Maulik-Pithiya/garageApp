@@ -1,5 +1,5 @@
 import React from 'react'
-import { BrowserRouter ,Routes, Route, Link } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 import { ShoppingCart } from "lucide-react";
 
 
@@ -34,22 +34,21 @@ export default function Product() {
                             {/* <!-- Product Card 1 --> */}
                             <div className="group bg-white rounded-2xl border border-gray-200 shadow-sm transition-all duration-300 hover:-translate-y-1 overflow-hidden flex flex-col h-full">
                                 <div className="h-72 w-full flex items-center justify-center p-4 bg-white relative">
-                                    <img src="https://www.aftermarket.com.au/wp-content/uploads/2023/09/fuchs-1-oils-sept23.jpg" alt="Product"
+                                    <img src="https://th.bing.com/th/id/OPAC.3L3LD9OUdiuDyQ474C474" alt="Product"
                                         className="h-full w-full object-contain transition-transform duration-500 group-hover:scale-105" />
                                 </div>
 
-                                <div className="px-5 pb-5 flex flex-col flex-grow">
+                                <div className="px-5 pb-5 flex flex-col grow">
                                     <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Fuchs</span>
-                                    <h3 className="text-lg font-bold text-gray-900 leading-snug mt-1 cursor-pointer">Titan GT1 Pro Flex 5W-30</h3>
+                                    <h3 className="text-lg font-bold text-gray-900 leading-snug mt-1 cursor-pointer">Castrol MAGNATEC 5W-30 T Full-Synthetic Engine Oil (3.5 ml)</h3>
                                     <p className="text-gray-500 text-sm mt-2 leading-relaxed line-clamp-2 mb-4">High-performance fully synthetic engine oil with advanced additives.</p>
 
                                     <div className="mt-auto pt-4 border-t border-gray-100 flex items-end justify-between">
                                         <div className="flex flex-col">
-                                            <span className="text-xs text-gray-400 font-medium line-through">$49.99</span>
-                                            <div className="flex items-baseline gap-1"><span className="text-xl font-extrabold text-gray-900">$42.99</span><span className="text-xs text-gray-500">/ 5L</span></div>
+                                            <div className="text-xs text-gray-400 font-medium line-through">M.R.P. 2625</div>
+                                            <div className="text-2xl font-bold text-gray-900">Rs. 2200</div>
                                         </div>
-                                        <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-semibold shadow-md transition-all active:scale-95 flex items-center gap-2">
-                                            <ShoppingCart /> Add</button>
+
                                     </div>
                                 </div>
                             </div>
