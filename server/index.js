@@ -3,6 +3,7 @@ import bodyParser from "body-parser";
 import configDotenv from "dotenv";
 import mongoose from "mongoose";
 import route from "./routes/userRoutes.js";
+import vehicleRoute from "./routes/vehicleRoutes.js";
 import cors from 'cors'
 
 
@@ -25,6 +26,8 @@ mongoose
     .catch((error) => console.log(error));
 
 app.use("/api", route);
+app.use("/api", vehicleRoute);
+
 
 
 // node indexedDB.js

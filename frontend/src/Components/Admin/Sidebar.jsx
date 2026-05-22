@@ -98,7 +98,7 @@ function Sidebar() {
         {/* Main content area */}
         <div className="flex-1 flex flex-col overflow-hidden">
           {/* Top header – menu button only visible on mobile */}
-          <header className="flex items-center justify-between h-16 px-6 border-b border-gray-50 shadow-sm">
+          <header className="md:hidden flex items-center justify-between h-16 px-6 border-b border-gray-50 shadow-sm">
             <button
               onClick={toggleSidebar}
               className="p-2 rounded-lg hover:bg-gray-100 transition-colors md:hidden"
@@ -106,7 +106,7 @@ function Sidebar() {
             >
               <Menu size={24} />
             </button>
-            <div className="flex-1" /> {/* Spacer */}
+
             <div className="flex items-center space-x-3">
               <span className="text-sm font-medium text-gray-700">Admin</span>
               <div className="w-8 h-8 rounded-full bg-linear-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white font-semibold shadow-sm">
