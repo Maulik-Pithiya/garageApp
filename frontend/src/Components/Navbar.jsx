@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { CarFront, Menu, X } from "lucide-react";
+import { CarFront, Menu, Phone, X } from "lucide-react";
 import { NavLink } from "react-router-dom";
 
 
@@ -21,10 +21,12 @@ function Navbar() {
             <div className="container mx-auto px-4">
                 <div className="flex justify-between items-center py-4">
                     {/* Logo */}
+                    <a href="/">
                     <div className="flex items-center space-x-2">
                         <CarFront className="text-blue-600" />
                         <span className="text-xl font-bold text-gray-800">Prakash Auto</span>
                     </div>
+                    </a>
 
                     {/* Desktop menu */}
                     <div className="hidden md:flex space-x-8">
@@ -79,7 +81,9 @@ function Navbar() {
                                     : "text-gray-600"
                                 }`} onClick={closeMenu}>Admin</NavLink>
 
-                            <a href="tel:+919426041999" className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg transition-colors text-center mt-2">Contact Us</a>
+                            <a href="tel:+919426041999" className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg transition-colors text-center mt-2">
+                                <Phone className="text-white" size={18}/>
+                                Contact Us</a>
                         </div>
                     </div>
                 )}

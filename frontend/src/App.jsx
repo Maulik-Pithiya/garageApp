@@ -32,7 +32,8 @@ function App() {
           <Route index element={<Navigate to="dashboard" replace />} />
           <Route path="dashboard" element={<DashBoard />} />
           <Route path="messages" element={<Messages />} />
-          <Route path="products" element={<AdminProduct />} />
+          <Route path="manageVehicles" element={<AdminProduct isSoldSection={false} />} />
+          <Route path="soldVehicles" element={<AdminProduct isSoldSection={true} />} />
         </Route>
 
       </Routes>

@@ -5,6 +5,7 @@ import { Bike, Car, ShoppingCart, Send, MapPin, Clock, Phone, CheckCircle } from
 import { useForm } from "react-hook-form"
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
+import { NavLink } from 'react-router-dom';
 
 
 export default function Herosection() {
@@ -51,19 +52,17 @@ export default function Herosection() {
                 <div className="container mx-auto px-4">
                     <div className="flex flex-col md:flex-row items-center justify-between">
                         <div className="md:w-1/2 mb-10 md:mb-0">
-                            <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-7">Professional Auto Services & Oil
+                            <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-7">Professional Auto Services <br />& Oil
                                 Traders</h1>
                             <p className="text-gray-600 text-lg mb-3">We specialize in buying and selling quality second-hand
                                 vehicles and provide a wide range of automotive products.</p>
                             <p className="text-gray-600 text-lg mb-7">We offer a wide selection of well-maintained second-hand
                                 two-wheelers and four-wheelers for sale, and we also buy vehicles from customers.</p>
                             <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
-                                <a href=""
-                                    className="btn-primary py-3 px-6 rounded-lg text-center font-medium shadow-md">Two-Wheel
-                                    Services</a>
-                                <a href=""
-                                    className="bg-white text-blue-600 border border-blue-600 hover:bg-blue-50 py-3 px-6 rounded-lg text-center font-medium shadow-sm transition-colors">Four-Wheel
-                                    Services</a>
+                                
+                                <NavLink to="/vehicle"
+                                    className="bg-white  text-blue-600 border border-blue-600 hover:bg-blue-50 py-3 px-6 rounded-lg text-center font-medium shadow-sm transition-colors">
+                                        Vehicle Service</NavLink>
                             </div>
                         </div>
                         <div className="md:w-1/2 flex justify-center md:ms-8 ms-0">

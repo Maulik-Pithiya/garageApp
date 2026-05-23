@@ -41,6 +41,18 @@ const vehicleSchema = new mongoose.Schema({
         type: Boolean,
         default: true,
     },
+    ownerName: {
+        type: String,
+        default: "",
+    },
+    ownerContact: {
+        type: String,
+        default: "",
+    },
+    isSold: {
+        type: Boolean,
+        default: false,
+    },
     date: {
         type: Date,
         default: Date.now,

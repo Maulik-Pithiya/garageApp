@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import manageVehiclesLogo from '../../assets/manageVehicles.png'
 import toast from 'react-hot-toast';
 import {
   Plus,
@@ -17,10 +18,16 @@ import {
   Image as ImageIcon,
   Key,
   Eye,
-  EyeOff
+  EyeOff,
+  User,
+  Phone,
+  Users,
+  CheckCircle2,
+  Lock,
+  Contact
 } from 'lucide-react';
 
-const AdminProduct = () => {
+const AdminProduct = ({ isSoldSection = false }) => {
   const API = "http://localhost:8000/api";
 
   // State variables
@@ -30,6 +37,7 @@ const AdminProduct = () => {
   const [editingId, setEditingId] = useState(null);
   const [adminToken, setAdminToken] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedOwner, setSelectedOwner] = useState(null);
 
   // Form Fields
   const [formData, setFormData] = useState({
@@ -38,10 +46,13 @@ const AdminProduct = () => {
     price: '',
     kilometers: '',
     fuelType: 'Petrol',
-    passingYear: new Date().getFullYear(),
+    passingYear: '',
     transmission: 'Manual',
     category: 'four-wheels',
-    images: []
+    images: [],
+    ownerName: '',
+    ownerContact: '',
+    isSold: false
   });
 
   // Cloudinary Upload presets/states
@@ -80,6 +91,11 @@ const AdminProduct = () => {
 
     fetchConfigAndVehicles();
   }, []);
+
+  // Fetch vehicles whenever section changes (active vs sold)
+  useEffect(() => {
+    fetchVehicles();
+  }, [isSoldSection]);
 
   // Image Upload handler for Cloudinary (direct frontend upload)
   const handleImageUpload = async (e) => {
@@ -134,7 +150,7 @@ const AdminProduct = () => {
         }
       });
 
-      toast.success(newVisibility ? "Listing is now visible on the website!" : "Listing has been hidden from public view!", { id: toastId });
+      toast.success(newVisibility ? "Listing is now visible on the website!" : "Listing has been hidden!", { id: toastId });
       fetchVehicles();
     } catch (error) {
       console.error("Toggle visibility error:", error);
@@ -212,7 +228,10 @@ const AdminProduct = () => {
         passingYear: new Date().getFullYear(),
         transmission: 'Manual',
         category: 'four-wheels',
-        images: []
+        images: [],
+        ownerName: '',
+        ownerContact: '',
+        isSold: false
       });
       setEditingId(null);
       setShowForm(false);
@@ -238,7 +257,10 @@ const AdminProduct = () => {
       passingYear: vehicle.passingYear,
       transmission: vehicle.transmission,
       category: vehicle.category || 'four-wheels',
-      images: vehicle.images
+      images: vehicle.images,
+      ownerName: vehicle.ownerName || '',
+      ownerContact: vehicle.ownerContact || '',
+      isSold: vehicle.isSold !== undefined ? vehicle.isSold : false
     });
     setShowForm(true);
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -269,43 +291,50 @@ const AdminProduct = () => {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
         <div>
           <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight flex items-center gap-2">
-            <Car className="text-blue-600 w-8 h-8" />
-            Manage Vehicles
+            <img src={manageVehiclesLogo} className='h-10 w-10' alt="Manage Vehicles Logo" />
+            {isSoldSection ? "Sold Vehicles" : "Manage Vehicles"}
           </h1>
-          <p className="text-sm text-gray-500 mt-1">Add, edit, or remove pre-owned cars from the system</p>
+          <p className="text-sm text-gray-500 mt-1">
+            {isSoldSection ? "View pre-owned cars that have been sold" : "Add, edit, or remove pre-owned cars from the system"}
+          </p>
         </div>
 
         <div className="flex items-center gap-3">
-          <button
-            onClick={() => {
-              if (showForm) {
-                setEditingId(null);
-                setFormData({
-                  name: '',
-                  location: '',
-                  price: '',
-                  kilometers: '',
-                  fuelType: 'Petrol',
-                  passingYear: new Date().getFullYear(),
-                  transmission: 'Manual',
-                  category: 'four-wheels',
-                  images: []
-                });
-              }
-              setShowForm(!showForm);
-            }}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 transition shadow-md active:scale-95 cursor-pointer"
-          >
-            {showForm ? <X className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
-            {showForm ? "Cancel" : "Add Vehicle"}
-          </button>
+          {!isSoldSection && (
+            <button
+              onClick={() => {
+                if (showForm) {
+                  setEditingId(null);
+                  setFormData({
+                    name: '',
+                    location: '',
+                    price: '',
+                    kilometers: '',
+                    fuelType: 'Petrol',
+                    passingYear: new Date().getFullYear(),
+                    transmission: 'Manual',
+                    category: 'four-wheels',
+                    images: [],
+                    ownerName: '',
+                    ownerContact: '',
+                    isSold: false
+                  });
+                }
+                setShowForm(!showForm);
+              }}
+              className="flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 transition shadow-md active:scale-95 cursor-pointer"
+            >
+              {showForm ? <X className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
+              {showForm ? "Cancel" : "Add Vehicle"}
+            </button>
+          )}
         </div>
       </div>
 
       {/* Addition & Update Form block (Popup Modal Box) */}
       {showForm && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs z-50 flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-white border border-gray-200 rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl relative transition transform scale-100 animate-in fade-in zoom-in-95 duration-200">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+          <div className="bg-white border border-gray-200 rounded-3xl max-w-4xl w-full h-[90vh] sm:h-[85vh] max-h-[90vh] shadow-2xl relative transition transform scale-100 animate-in fade-in zoom-in-95 duration-200 flex flex-col">
             {/* Close Button at Top-Right of Modal */}
             <button
               type="button"
@@ -320,7 +349,10 @@ const AdminProduct = () => {
                   passingYear: new Date().getFullYear(),
                   transmission: 'Manual',
                   category: 'four-wheels',
-                  images: []
+                  images: [],
+                  ownerName: '',
+                  ownerContact: '',
+                  isSold: false
                 });
                 setShowForm(false);
               }}
@@ -330,259 +362,418 @@ const AdminProduct = () => {
               <X className="w-5 h-5" />
             </button>
 
-            <div className="p-6 md:p-8">
+            <div className="p-6  flex flex-col h-full">
               <h2 className=" text-2xl font-bold text-gray-900 mb-6 pb-3 border-b border-gray-100 flex items-center gap-2">
                 <Car className="text-blue-600" /> {editingId ? 'Edit Vehicle Listing' : 'Register New Pre-owned Vehicle'}
               </h2>
 
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                  {/* Car Name */}
-                  <div className="md:col-span-2">
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Vehicle Name *</label>
-                    <input
-                      type="text"
-                      name="name"
-                      value={formData.name}
-                      onChange={handleInputChange}
-                      required
-                      placeholder="e.g. Maruti Suzuki Swift VXI"
-                      className="w-full bg-gray-50 border border-gray-300 rounded-lg py-2.5 px-4 focus:outline-none focus:border-blue-500 focus:bg-white transition-colors"
-                    />
-                  </div>
-
-                  {/* Price */}
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-1">
-                      Price (Rs.) *
-                    </label>
-                    <input
-                      type="number"
-                      name="price"
-                      value={formData.price}
-                      onChange={handleInputChange}
-                      required
-                      min="0"
-                      placeholder="e.g. 450000"
-                      className="w-full bg-gray-50 border border-gray-300 rounded-lg py-2.5 px-4 focus:outline-none focus:border-blue-500 focus:bg-white transition-colors"
-                    />
-                  </div>
-
-                  {/* Kilometers */}
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-1">
-                      <Gauge className="w-4 h-4 text-gray-400" /> Kilometers *
-                    </label>
-                    <input
-                      type="number"
-                      name="kilometers"
-                      value={formData.kilometers}
-                      onChange={handleInputChange}
-                      required
-                      min="0"
-                      placeholder="e.g. 52000"
-                      className="w-full bg-gray-50 border border-gray-300 rounded-lg py-2.5 px-4 focus:outline-none focus:border-blue-500 focus:bg-white transition-colors"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
-                  {/* Location */}
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-1">
-                      <MapPin className="w-4 h-4 text-gray-400" /> Location *
-                    </label>
-                    <input
-                      type="text"
-                      name="location"
-                      value={formData.location}
-                      onChange={handleInputChange}
-                      required
-                      placeholder="e.g. Nadiad, Gujarat"
-                      className="w-full bg-gray-50 border border-gray-300 rounded-lg py-2.5 px-4 focus:outline-none focus:border-blue-500 focus:bg-white transition-colors"
-                    />
-                  </div>
-
-                  {/* Passing Year */}
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-1">
-                      <Calendar className="w-4 h-4 text-gray-400" /> Passing Year *
-                    </label>
-                    <input
-                      type="number"
-                      name="passingYear"
-                      value={formData.passingYear}
-                      onChange={handleInputChange}
-                      required
-                      min="1990"
-                      max={new Date().getFullYear() + 1}
-                      placeholder="e.g. 2021"
-                      className="w-full bg-gray-50 border border-gray-300 rounded-lg py-2.5 px-4 focus:outline-none focus:border-blue-500 focus:bg-white transition-colors"
-                    />
-                  </div>
-
-                  {/* Fuel Type */}
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-1">
-                      <Fuel className="w-4 h-4 text-gray-400" /> Fuel Type *
-                    </label>
-                    <select
-                      name="fuelType"
-                      value={formData.fuelType}
-                      onChange={handleInputChange}
-                      className="w-full bg-gray-50 border border-gray-300 rounded-lg py-2.5 px-4 focus:outline-none focus:border-blue-500 focus:bg-white transition-colors text-gray-700"
-                    >
-                      <option value="Petrol">Petrol</option>
-                      <option value="Diesel">Diesel</option>
-                      <option value="CNG">CNG</option>
-                      <option value="Electric">Electric</option>
-                    </select>
-                  </div>
-
-                  {/* Transmission Type */}
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-1">
-                      <Settings className="w-4 h-4 text-gray-400" /> Transmission *
-                    </label>
-                    <select
-                      name="transmission"
-                      value={formData.transmission}
-                      onChange={handleInputChange}
-                      className="w-full bg-gray-50 border border-gray-300 rounded-lg py-2.5 px-4 focus:outline-none focus:border-blue-500 focus:bg-white transition-colors text-gray-700"
-                    >
-                      <option value="Manual">Manual</option>
-                      <option value="Automatic">Automatic</option>
-                    </select>
-                  </div>
-
-                  {/* Category */}
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-1">
-                      <Car className="w-4 h-4 text-gray-400" /> Category *
-                    </label>
-                    <select
-                      name="category"
-                      value={formData.category}
-                      onChange={handleInputChange}
-                      className="w-full bg-gray-50 border border-gray-300 rounded-lg py-2.5 px-4 focus:outline-none focus:border-blue-500 focus:bg-white transition-colors text-gray-700"
-                    >
-                      <option value="two-wheels">Two Wheeler</option>
-                      <option value="four-wheels">Four Wheeler</option>
-                    </select>
-                  </div>
-                </div>
-
-                {/* Image Gallery uploads */}
-                <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
-                  <h4 className="text-md font-bold text-gray-800 mb-3 flex items-center gap-1.5">
-                    <ImageIcon className="w-5 h-5 text-blue-600" /> Vehicle Images *
-                  </h4>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
-                    {/* File input (Cloudinary) */}
-                    <div>
-                      <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Upload File directly to Cloudinary</label>
-                      <div className="relative border-2 border-dashed border-gray-300 hover:border-blue-500 rounded-lg p-4 bg-white text-center cursor-pointer transition">
-                        <input
-                          type="file"
-                          accept="image/*"
-                          onChange={handleImageUpload}
-                          disabled={uploadingImage}
-                          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                        />
-                        <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                        <span className="text-sm font-medium text-gray-600 block">
-                          {uploadingImage ? 'Uploading...' : 'Choose file or drag & drop'}
-                        </span>
-                        <span className="text-xs text-gray-400">Directly goes to Cloudinary cloud (dytjsoyyz)</span>
-                      </div>
+              <form onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-0">
+                <div className="space-y-6 overflow-y-auto pr-5" style={{ scrollbarWidth: 'thin' }}>
+                  <div className="grid grid-cols-1 md:grid-cols-2  lg:grid-cols-4 gap-6">
+                    {/* Car Name */}
+                    <div className="md:col-span-2">
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">Vehicle Name *</label>
+                      <input
+                        type="text"
+                        name="name"
+                        value={formData.name}
+                        onChange={handleInputChange}
+                        required
+                        placeholder="e.g. Hyundai Verna SX "
+                        className="w-full bg-gray-50 border border-gray-300 rounded-lg py-2.5 px-4 focus:outline-none focus:border-blue-500 focus:bg-white transition-colors"
+                      />
                     </div>
 
-                    {/* Direct image link paste fallback */}
+                    {/* Price */}
                     <div>
-                      <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Paste Image URL Link manually</label>
-                      <div className="flex flex-col gap-2">
+                      <label className="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-1">
+                        Price (Rs.) *
+                      </label>
+                      <input
+                        type="number"
+                        name="price"
+                        value={formData.price}
+                        onChange={handleInputChange}
+                        required
+                        min="0"
+                        placeholder="e.g. 450000"
+                        className="w-full bg-gray-50 border border-gray-300 rounded-lg py-2.5 px-4 focus:outline-none focus:border-blue-500 focus:bg-white transition-colors"
+                      />
+                    </div>
+
+                    {/* Kilometers */}
+                    <div>
+                      <label className="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-1">
+                        <Gauge className="w-4 h-4 text-gray-400" /> Kilometers *
+                      </label>
+                      <input
+                        type="number"
+                        name="kilometers"
+                        value={formData.kilometers}
+                        onChange={handleInputChange}
+                        required
+                        min="0"
+                        placeholder="e.g. 52000"
+                        className="w-full bg-gray-50 border border-gray-300 rounded-lg py-2.5 px-4 focus:outline-none focus:border-blue-500 focus:bg-white transition-colors"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+                    {/* Location */}
+                    <div>
+                      <label className="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-1">
+                        <MapPin className="w-4 h-4 text-gray-400" /> Location *
+                      </label>
+                      <input
+                        type="text"
+                        name="location"
+                        value={formData.location}
+                        onChange={handleInputChange}
+                        required
+                        placeholder="e.g. Nadiad, Gujarat"
+                        className="w-full bg-gray-50 border border-gray-300 rounded-lg py-2.5 px-4 focus:outline-none focus:border-blue-500 focus:bg-white transition-colors"
+                      />
+                    </div>
+
+                    {/* Passing Year */}
+                    <div>
+                      <label className="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-1">
+                        <Calendar className="w-4 h-4 text-gray-400" /> Passing Year *
+                      </label>
+                      <input
+                        type="number"
+                        name="passingYear"
+                        value={formData.passingYear}
+                        onChange={handleInputChange}
+                        required
+                        min="1990"
+                        max={new Date().getFullYear() + 1}
+                        placeholder="e.g. 2021"
+                        className="w-full bg-gray-50 border border-gray-300 rounded-lg py-2.5 px-4 focus:outline-none focus:border-blue-500 focus:bg-white transition-colors"
+                      />
+                    </div>
+
+                    {/* Fuel Type */}
+                    <div>
+                      <label className="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-1">
+                        <Fuel className="w-4 h-4 text-gray-400" /> Fuel Type *
+                      </label>
+                      <select
+                        name="fuelType"
+                        value={formData.fuelType}
+                        onChange={handleInputChange}
+                        className="w-full bg-gray-50 border border-gray-300 rounded-lg py-2.5 px-4 focus:outline-none focus:border-blue-500 focus:bg-white transition-colors text-gray-700"
+                      >
+                        <option value="Petrol">Petrol</option>
+                        <option value="Diesel">Diesel</option>
+                        <option value="CNG">CNG</option>
+                        <option value="Electric">Electric</option>
+                      </select>
+                    </div>
+
+                    {/* Transmission Type */}
+                    <div>
+                      <label className=" text-sm font-semibold text-gray-700 mb-2 flex items-center gap-1">
+                        <Settings className="w-4 h-4 text-gray-400" /> Transmission *
+                      </label>
+                      <select
+                        name="transmission"
+                        value={formData.transmission}
+                        onChange={handleInputChange}
+                        className="w-full bg-gray-50 border border-gray-300 rounded-lg py-2.5 px-4 focus:outline-none focus:border-blue-500 focus:bg-white transition-colors text-gray-700"
+                      >
+                        <option value="Manual">Manual</option>
+                        <option value="Automatic">Automatic</option>
+                      </select>
+                    </div>
+
+                    {/* Category */}
+                    <div>
+                      <label className=" text-sm font-semibold text-gray-700 mb-2 flex items-center gap-1">
+                        <Car className="w-4 h-4 text-gray-400" /> Category *
+                      </label>
+                      <select
+                        name="category"
+                        value={formData.category}
+                        onChange={handleInputChange}
+                        className="w-full bg-gray-50 border border-gray-300 rounded-lg py-2.5 px-4 focus:outline-none focus:border-blue-500 focus:bg-white transition-colors text-gray-700"
+                      >
+                        <option value="two-wheels">Two Wheeler</option>
+                        <option value="four-wheels">Four Wheeler</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* Owner Details Section */}
+                  <div className="bg-gray-50 rounded-xl p-6 border border-gray-200 mt-6">
+                    <h4 className="text-md font-bold text-gray-800 mb-3 flex items-center gap-1.5">
+                      <User className="w-5 h-5 text-blue-600" /> Owner Details
+                    </h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">Owner Full Name</label>
                         <input
                           type="text"
-                          value={tempImageUrl}
-                          onChange={(e) => setTempImageUrl(e.target.value)}
-                          placeholder="https://images.unsplash.com/... or cloudinary url"
-                          className="flex-1 bg-white border border-gray-300 rounded-lg py-2.5 px-3 focus:outline-none focus:border-blue-500 text-sm"
+                          name="ownerName"
+                          value={formData.ownerName || ''}
+                          onChange={handleInputChange}
+                          placeholder="e.g. Rajesh Kumar"
+                          className="w-full bg-white border border-gray-300 rounded-lg py-2.5 px-4 focus:outline-none focus:border-blue-500 transition-colors text-sm"
                         />
-                        <button
-                          type="button"
-                          onClick={addImageUrlManually}
-                          className="px-5 py-2.5 bg-blue-50 border border-blue-300 text-blue-700 font-medium text-sm rounded-lg hover:bg-blue-100 hover:border-blue-400 hover:shadow-md transition-all duration-200 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 cursor-pointer"
-                        >
-                          Add URL
-                        </button>
                       </div>
-                      <span className="text-xs text-gray-400 mt-2 block leading-relaxed">
-                        Paste raw image link if your upload preset fails or you already have images uploaded.
-                      </span>
+                      <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">Owner Contact Number</label>
+                        <input
+                          type="text"
+                          name="ownerContact"
+                          value={formData.ownerContact || ''}
+                          onChange={handleInputChange}
+                          placeholder="e.g. +91 9876543210"
+                          className="w-full bg-white border border-gray-300 rounded-lg py-2.5 px-4 focus:outline-none focus:border-blue-500 transition-colors text-sm"
+                        />
+                      </div>
                     </div>
                   </div>
 
-                  {/* Uploaded Images List layout */}
-                  <div className="mt-4">
-                    <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider block mb-3">Images Added ({formData.images.length})</span>
-                    {formData.images.length === 0 ? (
-                      <div className="text-center py-6 text-gray-400 text-sm bg-white rounded-lg border border-gray-100 font-medium">
-                        No images added yet. Upload files or enter image links above to continue.
+
+
+                  {/* Image Gallery uploads */}
+                  <div className="bg-gray-50 rounded-xl p-6 border border-gray-200 mt-6">
+                    <h4 className="text-md font-bold text-gray-800 mb-3 flex items-center gap-1.5">
+                      <ImageIcon className="w-5 h-5 text-blue-600" /> Vehicle Images *
+                    </h4>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
+                      {/* File input (Cloudinary) */}
+                      <div>
+                        <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Upload File directly to Cloudinary</label>
+                        <div className="relative border-2 border-dashed border-gray-300 hover:border-blue-500 rounded-lg p-4 bg-white text-center cursor-pointer transition">
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={handleImageUpload}
+                            disabled={uploadingImage}
+                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                          />
+                          <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                          <span className="text-sm font-medium text-gray-600 block">
+                            {uploadingImage ? 'Uploading...' : 'Choose file or drag & drop'}
+                          </span>
+                          <span className="text-xs text-gray-400">Directly goes to Cloudinary cloud (dytjsoyyz)</span>
+                        </div>
                       </div>
-                    ) : (
-                      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-4">
-                        {formData.images.map((url, idx) => (
-                          <div key={idx} className="relative group rounded-lg overflow-hidden border border-gray-200 aspect-video bg-white shadow-sm hover:shadow">
-                            <img src={url} alt={`Vehicle Upload ${idx}`} className="w-full h-full object-cover" />
-                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
-                              <button
-                                type="button"
-                                onClick={() => removeImage(idx)}
-                                className="bg-red-600 hover:bg-red-700 text-white p-1.5 rounded-full shadow-md transition transform hover:scale-105 active:scale-95 cursor-pointer"
-                                title="Remove image"
-                              >
-                                <Trash2 className="w-4 h-4" />
-                              </button>
+
+                      {/* Direct image link paste fallback */}
+                      <div>
+                        <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Paste Image URL Link manually</label>
+                        <div className="flex flex-col gap-2">
+                          <input
+                            type="text"
+                            value={tempImageUrl}
+                            onChange={(e) => setTempImageUrl(e.target.value)}
+                            placeholder="https://images.unsplash.com/... or cloudinary url"
+                            className="flex-1 bg-white border border-gray-300 rounded-lg py-2.5 px-3 focus:outline-none focus:border-blue-500 text-sm"
+                          />
+                          <button
+                            type="button"
+                            onClick={addImageUrlManually}
+                            className="px-5 py-2.5 bg-blue-50 border border-blue-300 text-blue-700 font-medium text-sm rounded-lg hover:bg-blue-100 hover:border-blue-400 hover:shadow-md transition-all duration-200 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 cursor-pointer"
+                          >
+                            Add URL
+                          </button>
+                        </div>
+                        <span className="text-xs text-gray-400 mt-2 block leading-relaxed">
+                          Paste raw image link if your upload preset fails or you already have images uploaded.
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Uploaded Images List layout */}
+                    <div className="mt-4">
+                      <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider block mb-3">Images Added ({formData.images.length})</span>
+                      {formData.images.length === 0 ? (
+
+                        <div className="text-center py-6 text-gray-400 text-sm bg-white rounded-lg border border-gray-100 font-medium">
+                          <div className='flex justify-center mb-2'><ImageIcon size={40} /></div>
+                          No images added yet. Upload files or enter image links above to continue.
+                        </div>
+                      ) : (
+                        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-4">
+                          {formData.images.map((url, idx) => (
+                            <div key={idx} className="relative group rounded-lg overflow-hidden border border-gray-200 aspect-video bg-white shadow-sm hover:shadow">
+                              <img src={url} alt={`Vehicle Upload ${idx}`} className="w-full h-full object-cover" />
+                              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
+                                <button
+                                  type="button"
+                                  onClick={() => removeImage(idx)}
+                                  className="bg-red-600 hover:bg-red-700 text-white p-1.5 rounded-full shadow-md transition transform hover:scale-105 active:scale-95 cursor-pointer"
+                                  title="Remove image"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </button>
+                              </div>
+                              <span className="absolute bottom-1 left-1 bg-black/60 text-white text-[10px] px-1.5 py-0.5 rounded font-mono">#{idx + 1}</span>
                             </div>
-                            <span className="absolute bottom-1 left-1 bg-black/60 text-white text-[10px] px-1.5 py-0.5 rounded font-mono">#{idx + 1}</span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Sold Status Section - Only visible in Edit Modal box */}
+                    {editingId && (
+                      <div
+                        className={`mt-6 flex bg-white shadow-sm flex-col justify-between gap-5 rounded-2xl border p-5 transition-all duration-300 sm:flex-row sm:items-center ${formData.isSold
+                          ? 'border-red-200'
+                          : 'border-green-100'
+                          }`}
+                      >
+                        {/* Left: Icon & Text */}
+                        <div className="flex items-start gap-4">
+                          <div
+                            className={`shrink-0 rounded-xl p-3 transition-colors duration-300 ${formData.isSold
+                              ? 'bg-red-50 text-red-600'
+                              : 'bg-green-50 text-green-600'
+                              }`}
+                          >
+                            <Car className="h-5 w-5" />
                           </div>
-                        ))}
+                          <div>
+                            <h4 className={`text-base font-semibold transition-colors ${formData.isSold ? 'text-gray-700' : 'text-gray-900'
+                              }`}>
+                              Vehicle Status
+                            </h4>
+                            <p className="mt-1 max-w-[280px] text-sm leading-relaxed text-gray-500 sm:max-w-md">
+                              {formData.isSold
+                                ? "This vehicle is currently marked as sold and sits in your archive."
+                                : "Currently visible to buyers. Mark as sold to move it to the archive."}
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Right: Badge & Toggle */}
+                        <div className="flex shrink-0 items-center gap-4 sm:ml-auto">
+                          {/* Status Badge */}
+                          <span
+                            className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm font-medium transition-colors duration-300 ${formData.isSold
+                              ? 'border-red-200 bg-red-50 text-red-600'
+                              : 'border-green-200 bg-green-50 text-green-700'
+                              }`}
+                          >
+                            {formData.isSold ? (
+                              <>
+                                <Lock className="h-3.5 w-3.5" /> Sold
+                              </>
+                            ) : (
+                              <>
+                                <CheckCircle2 className="h-3.5 w-3.5" /> Available
+                              </>
+                            )}
+                          </span>
+
+                          {/* Visual Divider (Desktop only) */}
+                          <div className="hidden h-8 w-px bg-gray-200 sm:block"></div>
+
+                          {/* Toggle Switch */}
+                          <label className="group relative inline-flex cursor-pointer items-center">
+                            <input
+                              type="checkbox"
+                              name="isSold"
+                              checked={formData.isSold || false}
+                              onChange={(e) => setFormData(prev => ({ ...prev, isSold: e.target.checked }))}
+                              className="peer sr-only"
+                              aria-label="Toggle sold status"
+                            />
+                            <div className=" relative h-6 w-11 rounded-full
+                              bg-emerald-500 transition-colors duration-200
+                              after:absolute after:top-0.5 after:left-0.5
+                              after:h-5 after:w-5 after:rounded-full
+                              after:bg-white after:shadow-sm
+                              after:transition-transform after:duration-200
+                              after:content-['']
+                              peer-checked:bg-red-500
+                              peer-checked:after:translate-x-5
+                              hover:after:scale-95
+                              focus-within:ring-0"></div>
+                          </label>
+                        </div>
                       </div>
                     )}
+
                   </div>
+
+                  {/* Form actions */}
                 </div>
 
-                {/* Form actions */}
-                <div className="flex justify-end gap-3 pt-3 border-t border-gray-100">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setEditingId(null);
-                      setFormData({
-                        name: '',
-                        location: '',
-                        price: '',
-                        kilometers: '',
-                        fuelType: 'Petrol',
-                        passingYear: new Date().getFullYear(),
-                        transmission: 'Manual',
-                        category: 'four-wheels',
-                        images: []
-                      });
-                      setShowForm(false);
-                    }}
-                    className="px-5 py-2.5 text-sm font-semibold border border-gray-200 shadow-sm text-gray-600 hover:bg-gray-100 rounded-lg transition"
-                  >
-                    Close Form
-                  </button>
-                  <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="px-6 py-2.5 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition shadow-md active:scale-95 flex items-center gap-2 cursor-pointer text-sm"
-                  >
-                    {isSubmitting ? 'Saving...' : editingId ? 'Save Changes' : 'Register Vehicle'}
-                  </button>
+                <div className="sticky bottom-0 bg-white pt-4 px-6 flex justify-between items-center">
+                  {/* Optional: Helper text or delete button if editing */}
+                  {editingId && (
+                    <button
+                      type="button"
+                      className="hidden md:block bg-red-50 px-4 py-2 rounded-lg text-red-600 text-sm font-medium hover:text-red-700 transition"
+                      onClick={() => {
+                        // Logic to delete the vehicle
+                        console.log("Delete vehicle");
+                      }}
+                    >
+                      Delete Vehicle
+                    </button>
+                  )}
+
+                  {/* If not editing, or just to balance the layout, use an empty div or keep justify-end */}
+                  {!editingId && <div></div>}
+
+                  <div className="flex justify-end gap-3">
+                    {/* {/* 1. Cancel Button: Combines "Close" and "Clear" logic.  */}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setEditingId(null);
+                        // Always reset data when cancelling to prevent stale data on reopen
+                        setFormData({
+                          name: '',
+                          location: '',
+                          price: '',
+                          kilometers: '',
+                          fuelType: 'Petrol',
+                          passingYear: '',
+                          transmission: 'Manual',
+                          category: 'four-wheels',
+                          images: [],
+                          ownerName: '',
+                          ownerContact: '',
+                          isSold: false
+                        });
+                        setShowForm(false);
+                      }}
+                      className=" border border-gray-100 px-5 py-2.5 text-sm font-medium text-gray-600 hover:text-gray-800 hover:bg-gray-50 rounded-lg transition"
+                    >
+                      Cancel
+                    </button>
+
+                    {/* 2. Primary Action Button */}
+                    <button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className={`px-6 py-2.5 text-white font-semibold rounded-lg shadow-sm transition flex items-center gap-2 text-sm
+        ${isSubmitting
+                          ? 'bg-blue-400 cursor-not-allowed'
+                          : 'bg-blue-600 hover:bg-blue-700 hover:shadow-md active:scale-95 cursor-pointer'
+                        }`}
+                    >
+                      {isSubmitting ? (
+                        <>
+                          <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                          </svg>
+                          Saving...
+                        </>
+                      ) : (
+                        editingId ? 'Save Changes' : 'Register Vehicle'
+                      )}
+                    </button>
+                  </div>
                 </div>
               </form>
             </div>
@@ -591,105 +782,192 @@ const AdminProduct = () => {
       )}
 
       {/* Vehicles Table / Listing list */}
-      <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-1.5">
-        <Car className="w-5 h-5 text-blue-600" /> Existing Listings ({vehicles.length})
-      </h2>
+      {(() => {
+        const filteredVehiclesList = vehicles.filter(car => isSoldSection ? car.isSold === true : car.isSold !== true);
+        return (
+          <>
+            <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-1.5">
+              {isSoldSection ? "Sold Listings" : "Existing Listings"} ({filteredVehiclesList.length})
+            </h2>
 
-      {loading ? (
-        <div className="text-center py-20 bg-white border border-gray-200 rounded-2xl">
-          <div className="inline-block w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mb-3"></div>
-          <p className="text-gray-500 font-semibold text-sm">Loading vehicle records...</p>
-        </div>
-      ) : vehicles.length === 0 ? (
-        <div className="text-center py-20 bg-white border border-gray-200 rounded-2xl shadow-sm">
-          <Car className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-          <h3 className="text-lg font-bold text-gray-700">No Vehicles Registered</h3>
-          <p className="text-gray-400 text-sm max-w-md mx-auto mt-1 leading-relaxed">
-            There are no vehicles listed in the Prakash Auto database. Click the "Add Vehicle" button above to publish your first pre-owned car.
-          </p>
-        </div>
-      ) : (
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden mb-12">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left">
-              <thead className="bg-gray-50 border-b border-gray-200 text-xs font-bold text-gray-500 uppercase tracking-wider">
-                <tr>
-                  <th className="px-6 py-4">Vehicle</th>
-                  <th className="px-6 py-4">Details</th>
-                  <th className="px-6 py-4">Pricing</th>
-                  <th className="px-6 py-4 text-center">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100 text-sm">
-                {vehicles.map((car) => (
-                  <tr key={car._id} className="hover:bg-gray-50/50 transition">
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-4">
-                        <div className="w-20 h-14 rounded-lg overflow-hidden border border-gray-100 bg-gray-50 flex-shrink-0">
-                          {car.images && car.images[0] ? (
-                            <img src={car.images[0]} alt={car.name} className="w-full h-full object-cover" />
-                          ) : (
-                            <ImageIcon className="w-6 h-6 text-gray-300 m-auto mt-4" />
-                          )}
-                        </div>
-                        <div>
-                          <div className="font-bold text-gray-900 leading-snug">{car.name}</div>
-                          <div className="text-xs text-gray-500 flex items-center gap-1 mt-1 font-medium">
-                            <MapPin className="w-3.5 h-3.5 text-blue-500" />
-                            {car.location}
-                          </div>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="space-y-1 text-gray-700">
-                        <div className="flex items-center gap-2 text-[10px] font-bold">
-                          <span className="bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full uppercase">{car.fuelType}</span>
-                          <span className="bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full uppercase">{car.transmission}</span>
-                          <span className={`${car.category === 'two-wheels' ? 'bg-purple-50 text-purple-700' : 'bg-orange-50 text-orange-700'} px-2 py-0.5 rounded-full uppercase`}>
-                            {car.category === 'two-wheels' ? '2-Wheel' : '4-Wheel'}
-                          </span>
-                        </div>
-                        <div className="text-xs text-gray-500 font-medium">
-                          {car.kilometers.toLocaleString()} km • Year {car.passingYear}
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className="font-extrabold text-gray-900 text-base">Rs. {car.price.toLocaleString()}</span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center justify-center gap-3">
-                        <button
-                          onClick={() => toggleVisibility(car)}
-                          className={`p-2 border rounded-lg transition active:scale-95 shadow-sm cursor-pointer ${car.visible !== false
-                            ? 'border-green-200 hover:border-green-300 text-green-600 bg-green-50/50 hover:bg-green-50'
-                            : 'border-gray-200 hover:border-gray-300 text-gray-400 bg-gray-50 hover:bg-gray-100'
-                            }`}
-                          title={car.visible !== false ? "Visible to Public (Click to Hide)" : "Hidden from Public (Click to Show)"}
-                        >
-                          {car.visible !== false ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
-                        </button>
-                        <button
-                          onClick={() => startEdit(car)}
-                          className="p-2 border border-gray-200 hover:border-blue-200 text-gray-600 hover:text-blue-600 bg-white hover:bg-blue-50/50 rounded-lg transition active:scale-95 shadow-sm cursor-pointer"
-                          title="Edit vehicle details"
-                        >
-                          <Edit2 className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => deleteVehicle(car._id)}
-                          className="p-2 border border-gray-200 hover:border-red-200 text-gray-600 hover:text-red-600 bg-white hover:bg-red-50/50 rounded-lg transition active:scale-95 shadow-sm cursor-pointer"
-                          title="Delete listing"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            {loading ? (
+              <div className="text-center py-20 bg-white border border-gray-200 rounded-2xl">
+                <div className="inline-block w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mb-3"></div>
+                <p className="text-gray-500 font-semibold text-sm">Loading vehicle records...</p>
+              </div>
+            ) : filteredVehiclesList.length === 0 ? (
+              <div className="text-center py-20 bg-white border border-gray-200 rounded-2xl shadow-sm">
+                <Car className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                <h3 className="text-lg font-bold text-gray-700">
+                  {isSoldSection ? "No Sold Vehicles" : "No Vehicles Registered"}
+                </h3>
+                <p className="text-gray-400 text-sm max-w-md mx-auto mt-1 leading-relaxed">
+                  {isSoldSection
+                    ? "There are no vehicles marked as sold yet."
+                    : "There are no vehicles listed in the Prakash Auto database. Click the \"Add Vehicle\" button above to publish your first pre-owned car."}
+                </p>
+              </div>
+            ) : (
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden mb-12">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left">
+                    <thead className="bg-gray-50 border-b border-gray-200 text-xs font-bold text-gray-500 uppercase tracking-wider">
+                      <tr>
+                        <th className="px-6 py-4">Vehicle</th>
+                        <th className="px-6 py-4">Details</th>
+                        <th className="px-6 py-4">Pricing</th>
+                        <th className="px-6 py-4">Owner Details</th>
+                        <th className="px-6 py-4 text-center">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-100 text-sm">
+                      {filteredVehiclesList.map((car) => (
+                        <tr key={car._id} className="hover:bg-gray-50/50 transition">
+                          <td className="px-6 py-4">
+                            <div className="flex items-center gap-4">
+                              <div className="w-20 h-14 rounded-lg overflow-hidden border border-gray-100 bg-gray-50 shrink-0">
+                                {car.images && car.images[0] ? (
+                                  <img src={car.images[0]} alt={car.name} className="w-full h-full object-cover" />
+                                ) : (
+                                  <ImageIcon className="w-6 h-6 text-gray-300 m-auto mt-4" />
+                                )}
+                              </div>
+                              <div>
+                                <div className="font-bold text-gray-900 leading-snug">{car.name}</div>
+                                <div className="text-xs text-gray-500 flex items-center gap-1 mt-1 font-medium">
+                                  <MapPin className="w-3.5 h-3.5 text-blue-500" />
+                                  {car.location}
+                                </div>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="space-y-1 text-gray-700">
+                              <div className="flex items-center gap-2 text-[10px] font-bold">
+                                <span className="bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full uppercase">{car.fuelType}</span>
+                                <span className="bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full uppercase">{car.transmission}</span>
+                                <span className={`${car.category === 'two-wheels' ? 'bg-purple-50 text-purple-700' : 'bg-orange-50 text-orange-700'} px-2 py-0.5 rounded-full uppercase`}>
+                                  {car.category === 'two-wheels' ? '2-Wheel' : '4-Wheel'}
+                                </span>
+                              </div>
+                              <div className="text-xs text-gray-500 font-medium">
+                                {car.kilometers.toLocaleString()} km • Year {car.passingYear}
+                              </div>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className="font-extrabold text-gray-900 text-base">Rs. {car.price.toLocaleString()}</span>
+                          </td>
+                          <td className="px-6 py-4">
+                            {car.ownerName || car.ownerContact ? (
+                              <button
+                                onClick={() => setSelectedOwner({ name: car.ownerName || 'N/A', contact: car.ownerContact || 'N/A', vehicleName: car.name })}
+                                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 font-semibold text-xs rounded-lg border border-blue-200 transition-all duration-200 cursor-pointer active:scale-95 shadow-xs"
+                              >
+                                <Contact className="w-3.5 h-3.5" />
+                                View Details
+                              </button>
+                            ) : (
+                              <span className="text-xs text-gray-400 italic">No Details</span>
+                            )}
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="flex items-center justify-center gap-3">
+                              <button
+                                onClick={() => toggleVisibility(car)}
+                                className={`p-2 border rounded-lg transition active:scale-95 shadow-sm cursor-pointer ${car.visible !== false
+                                  ? 'border-green-200 hover:border-green-300 text-green-600 bg-green-50/50 hover:bg-green-50'
+                                  : 'border-gray-200 hover:border-gray-300 text-gray-400 bg-gray-50 hover:bg-gray-100'
+                                  }`}
+                                title={car.visible !== false ? "Visible to Public (Click to Hide)" : "Hidden from Public (Click to Show)"}
+                              >
+                                {car.visible !== false ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+                              </button>
+                              <button
+                                onClick={() => startEdit(car)}
+                                className={`p-2 border rounded-lg transition active:scale-95 shadow-sm cursor-pointer ${car.visible !== false
+                                  ? 'border-green-200 hover:border-blue-300 text-blue-600 bg-blue-50/50 hover:bg-blue-50'
+                                  : 'border-gray-200 hover:border-gray-300 text-gray-400 bg-gray-50 hover:bg-gray-100'
+                                  }`}
+                                title="Edit vehicle details"
+                              >
+                                <Edit2 className="w-4 h-4" />
+                              </button>
+                              <button
+                                onClick={() => deleteVehicle(car._id)}
+                                className={`p-2 border rounded-lg transition active:scale-95 shadow-sm cursor-pointer ${car.visible !== false
+                                  ? 'border-red-200 hover:border-red-300 text-red-600 bg-red-50/50 hover:bg-red-50'
+                                  : 'border-gray-200 hover:border-gray-300 text-gray-400 bg-gray-50 hover:bg-gray-100'
+                                  }`}
+                                title="Delete listing"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+          </>
+        );
+      })()}
+
+      {/* Owner Details Modal */}
+      {selectedOwner && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+          <div className="bg-white border border-gray-200 rounded-3xl max-w-sm w-full shadow-2xl p-6 relative transition transform scale-100 animate-in fade-in zoom-in-95 duration-200">
+            {/* Close Button */}
+            <button
+              type="button"
+              onClick={() => setSelectedOwner(null)}
+              className="absolute top-4 right-4 bg-gray-100 hover:bg-gray-200 p-2.5 rounded-full shadow-sm transition text-gray-500 hover:text-gray-800 cursor-pointer active:scale-95"
+            >
+              <X className="w-4 h-4" />
+            </button>
+
+            <h3 className="text-xl font-bold text-gray-900 mb-4 pb-2 border-b border-gray-100 flex items-center gap-2">
+              <Contact className="text-blue-600 w-5 h-5" /> Owner Details
+            </h3>
+
+            <div className="space-y-4">
+              <div>
+                <span className="text-[10px] text-gray-400 font-bold uppercase block tracking-wider">Vehicle</span>
+                <span className="text-sm font-semibold text-gray-800">{selectedOwner.vehicleName}</span>
+              </div>
+              <div className="flex items-center gap-3 bg-gray-50 p-3 rounded-xl border border-gray-100">
+                <div className="bg-blue-100 p-2 rounded-lg text-blue-600">
+                  <User className="w-5 h-5" />
+                </div>
+                <div>
+                  <span className="text-[10px] text-gray-400 font-bold uppercase block tracking-wider">Full Name</span>
+                  <span className="text-sm font-bold text-gray-800">{selectedOwner.name}</span>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3 bg-gray-50 p-3 rounded-xl border border-gray-100">
+                <div className="bg-green-100 p-2 rounded-lg text-green-600">
+                  <Phone className="w-5 h-5" />
+                </div>
+                <div>
+                  <span className="text-[10px] text-gray-400 font-bold uppercase block tracking-wider">Contact Number</span>
+                  <a href={`tel:${selectedOwner.contact}`} className="text-sm font-bold text-blue-600 hover:underline">{selectedOwner.contact}</a>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-6 flex justify-end">
+              <button
+                type="button"
+                onClick={() => setSelectedOwner(null)}
+                className="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-sm rounded-lg transition active:scale-95 cursor-pointer"
+              >
+                Close
+              </button>
+            </div>
           </div>
         </div>
       )}

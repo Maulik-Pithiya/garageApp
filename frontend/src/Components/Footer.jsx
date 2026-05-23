@@ -44,7 +44,7 @@ export default function Footer() {
                     </div>
 
                     <div className="border-t border-gray-700 mt-6 text-center pt-4 text-gray-400">
-                        <p>&copy; 2025 Prakash Oil Traders All rights reserved.</p>
+                        <p>&copy; {new Date().getFullYear()} Prakash Oil Traders All rights reserved.</p>
                     </div>
                 </div>
             </footer>

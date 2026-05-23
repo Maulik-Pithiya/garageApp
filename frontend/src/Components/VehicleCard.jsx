@@ -10,7 +10,7 @@ export default function VehicleCard({ car, onViewDetails }) {
           <img 
             src={car.images[0]} 
             alt={car.name} 
-            className="w-full h-full object-cover transition-transform duration-500 hover:scale-105" 
+            className="w-full h-full object-center object-cover transition-transform duration-500 hover:scale-105" 
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-gray-300">
@@ -28,7 +28,7 @@ export default function VehicleCard({ car, onViewDetails }) {
       </div>
       
       {/* Card Body */}
-      <div className="p-6 flex flex-col flex-grow">
+      <div className="p-6 flex flex-col grow">
         <div className="mb-4">
           <div className="flex items-center gap-2 mb-1.5">
             <span className="bg-blue-50 text-blue-700 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">

@@ -79,8 +79,8 @@ export default function VehicleServices() {
   useEffect(() => {
     let result = vehicles;
 
-    // 0. Filter out hidden vehicles
-    result = result.filter(v => v.visible !== false);
+    // 0. Filter out hidden or sold vehicles
+    result = result.filter(v => v.visible !== false && v.isSold !== true);
 
     // 1. Vehicle Type (two-wheels / four-wheels)
     result = result.filter(v => {
@@ -356,114 +356,154 @@ export default function VehicleServices() {
 
       {/* Details Dialog Modal */}
       {selectedVehicle && (
-        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-xs transition duration-300">
-          <div className="bg-white rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl relative transition transform scale-100 animate-in fade-in zoom-in-95 duration-200">
-            {/* Close Button */}
-            <button 
-              onClick={() => setSelectedVehicle(null)}
-              className="absolute top-4 right-4 bg-white hover:bg-gray-100 p-2.5 rounded-full shadow-md z-10 transition text-gray-500 hover:text-gray-800 cursor-pointer active:scale-95"
-            >
-              <X className="w-5 h-5" />
-            </button>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/70 backdrop-blur-sm transition-all duration-300">
+  {/* Modal Container */}
+  <div className="bg-white rounded-2xl md:rounded-3xl w-full max-w-5xl h-full md:h-auto md:max-h-[90vh] overflow-hidden shadow-2xl relative flex flex-col">
+    
+    {/* Close Button */}
+    <button 
+      onClick={() => setSelectedVehicle(null)}
+      className="absolute top-3 right-3 z-20 bg-white/90 hover:bg-gray-100 text-gray-600 hover:text-gray-900 p-2 rounded-full shadow-lg backdrop-blur-md transition-all duration-200 cursor-pointer active:scale-95"
+      aria-label="Close modal"
+    >
+      <X className="w-5 h-5" />
+    </button>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 md:p-8">
-              {/* Photo Display Carousel */}
-              <div className="flex flex-col gap-4">
-                <div className="h-72 w-full rounded-2xl overflow-hidden bg-gray-50 border border-gray-100 shadow-inner relative">
-                  <img 
-                    src={selectedVehicle.images[activeImageIdx]} 
-                    alt={selectedVehicle.name} 
-                    className="w-full h-full object-cover" 
-                  />
-                  
-                  {/* Photo Indicators overlay */}
-                  <span className="absolute bottom-3 right-3 bg-black/60 text-white text-xs font-bold px-2 py-1 rounded">
-                    {activeImageIdx + 1} / {selectedVehicle.images.length}
-                  </span>
+    {/* Scrollable Content Area */}
+    <div className="flex-1 overflow-y-auto overflow-x-hidden">
+      <div className="grid grid-cols-1 lg:grid-cols-2">
+        
+        {/* LEFT COLUMN: Images */}
+        <div className="flex flex-col gap-4 p-4 md:p-6 lg:p-8 bg-gray-50">
+          
+          {/* Main Image */}
+          <div className="relative w-full aspect-4/3 bg-gray-200 rounded-2xl overflow-hidden shadow-sm ring-1 ring-gray-100 group">
+            <img 
+              src={selectedVehicle.images[activeImageIdx]} 
+              alt={`${selectedVehicle.name} view ${activeImageIdx + 1}`} 
+              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+              loading="lazy"
+              onError={(e) => {
+                e.target.onerror = null; 
+                e.target.src = "https://via.placeholder.com/800x600?text=Image+Unavailable";
+              }}
+            />
+            
+            {/* Image Counter Badge */}
+            <div className="absolute bottom-3 right-3 bg-black/60 backdrop-blur-md text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-sm">
+              {activeImageIdx + 1} / {selectedVehicle.images.length}
+            </div>
+          </div>
+
+          {/* Thumbnails Strip */}
+          {selectedVehicle.images.length > 1 && (
+            <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-thin snap-x snap-mandatory">
+              {selectedVehicle.images.map((img, idx) => (
+                <button 
+                  key={idx}
+                  onClick={() => setActiveImageIdx(idx)}
+                  className={`relative w-20 h-14 rounded-lg overflow-hidden border-2 shrink-0 snap-start transition-all ${
+                    activeImageIdx === idx 
+                      ? 'border-blue-600 ring-2 ring-blue-100 opacity-100' 
+                      : 'border-transparent opacity-60 hover:opacity-100'
+                  }`}
+                >
+                  <img src={img} alt="" className="w-full h-full object-cover" />
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* RIGHT COLUMN: Details */}
+        <div className="flex flex-col p-5 md:p-6 lg:p-8 relative">
+          
+          {/* Header Info */}
+          <div className="mb-5">
+            <h3 className="text-2xl md:text-3xl font-bold text-gray-900 leading-tight mb-3">
+              {selectedVehicle.name}
+            </h3>
+            <div className="flex flex-wrap items-center gap-2 text-xs md:text-sm text-gray-500 font-medium">
+              <span className="flex items-center gap-1.5 bg-gray-100 px-2.5 py-1 rounded-full">
+                <MapPin className="w-3.5 h-3.5 text-blue-500" />
+                {selectedVehicle.location}
+              </span>
+              <span className="text-gray-300">•</span>
+              <span className="flex items-center gap-1.5">
+                <Calendar className="w-3.5 h-3.5 text-gray-400" />
+                Listed {new Date(selectedVehicle.date).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}
+              </span>
+            </div>
+          </div>
+
+          {/* Price Card */}
+          <div className="bg-blue-50/50 border border-blue-100/50 rounded-2xl p-5 mb-6 relative overflow-hidden">
+            <span className="text-xs text-blue-600 font-bold uppercase tracking-wider block mb-1">Price</span>
+            <span className="text-3xl font-extrabold text-blue-700 tracking-tight">
+              Rs. {selectedVehicle.price.toLocaleString('en-IN')}
+            </span>
+          </div>
+
+          {/* Specs Grid */}
+          <div className="mb-6">
+            <h4 className="text-sm font-bold text-gray-800 mb-4 uppercase tracking-wide border-b border-gray-100 pb-2">
+              Technical Specifications
+            </h4>
+            <div className="grid grid-cols-2 gap-y-4 gap-x-2">
+              {/* Item 1 */}
+              <div className="flex items-start gap-3">
+                <Gauge className="w-5 h-5 text-gray-400 shrink-0 mt-0.5" />
+                <div>
+                  <span className="text-[10px] text-gray-400 font-bold uppercase block">Kilometers</span>
+                  <span className="text-sm font-semibold text-gray-800">{selectedVehicle.kilometers.toLocaleString()} km</span>
                 </div>
-
-                {/* Thumbnails array list */}
-                {selectedVehicle.images.length > 1 && (
-                  <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-thin">
-                    {selectedVehicle.images.map((img, idx) => (
-                      <button 
-                        key={idx}
-                        onClick={() => setActiveImageIdx(idx)}
-                        className={`w-16 h-12 rounded-lg overflow-hidden border-2 flex-shrink-0 cursor-pointer transition ${
-                          activeImageIdx === idx ? 'border-blue-600 shadow' : 'border-gray-100 hover:border-blue-300'
-                        }`}
-                      >
-                        <img src={img} alt="thumbnail" className="w-full h-full object-cover" />
-                      </button>
-                    ))}
-                  </div>
-                )}
+              </div>
+              
+              {/* Item 2 */}
+              <div className="flex items-start gap-3">
+                <Fuel className="w-5 h-5 text-gray-400 shrink-0 mt-0.5" />
+                <div>
+                  <span className="text-[10px] text-gray-400 font-bold uppercase block">Fuel</span>
+                  <span className="text-sm font-semibold text-gray-800">{selectedVehicle.fuelType}</span>
+                </div>
               </div>
 
-              {/* Text specifications */}
-              <div className="flex flex-col">
-                <h3 className="text-3xl font-extrabold text-gray-900 leading-tight mb-2">{selectedVehicle.name}</h3>
-                
-                <div className="flex items-center text-gray-500 text-xs font-semibold gap-3 mb-4">
-                  <span className="flex items-center gap-1">
-                    <MapPin className="w-4 h-4 text-blue-500" />
-                    {selectedVehicle.location}
-                  </span>
-                  <span>•</span>
-                  <span>Listed {new Date(selectedVehicle.date).toLocaleDateString(undefined, {year: 'numeric', month: 'long', day: 'numeric'})}</span>
+              {/* Item 3 */}
+              <div className="flex items-start gap-3">
+                <Calendar className="w-5 h-5 text-gray-400 shrink-0 mt-0.5" />
+                <div>
+                  <span className="text-[10px] text-gray-400 font-bold uppercase block">Model Year</span>
+                  <span className="text-sm font-semibold text-gray-800">{selectedVehicle.passingYear}</span>
                 </div>
+              </div>
 
-                <div className="bg-blue-50/50 border border-blue-100/50 rounded-2xl p-4 mb-6">
-                  <span className="text-xs text-blue-600 font-bold uppercase tracking-wider block mb-1">Pricing</span>
-                  <span className="text-4xl font-black text-blue-600">Rs. {selectedVehicle.price.toLocaleString()}</span>
+              {/* Item 4 */}
+              <div className="flex items-start gap-3">
+                <Settings className="w-5 h-5 text-gray-400 shrink-0 mt-0.5" />
+                <div>
+                  <span className="text-[10px] text-gray-400 font-bold uppercase block">Transmission</span>
+                  <span className="text-sm font-semibold text-gray-800">{selectedVehicle.transmission}</span>
                 </div>
-
-                <h4 className="text-md font-bold text-gray-800 mb-3 border-b border-gray-100 pb-1.5">Technical Specifications</h4>
-                <div className="grid grid-cols-2 gap-4 text-sm mb-6 text-gray-700 font-medium">
-                  <div className="flex items-center gap-3">
-                    <Gauge className="w-5 h-5 text-gray-400" />
-                    <div>
-                      <span className="text-[10px] text-gray-400 block uppercase font-bold">Kilometers</span>
-                      <span>{selectedVehicle.kilometers.toLocaleString()} km</span>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-3">
-                    <Fuel className="w-5 h-5 text-gray-400" />
-                    <div>
-                      <span className="text-[10px] text-gray-400 block uppercase font-bold">Fuel Type</span>
-                      <span>{selectedVehicle.fuelType}</span>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-3">
-                    <Calendar className="w-5 h-5 text-gray-400" />
-                    <div>
-                      <span className="text-[10px] text-gray-400 block uppercase font-bold">Model Year</span>
-                      <span>{selectedVehicle.passingYear}</span>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-3">
-                    <Settings className="w-5 h-5 text-gray-400" />
-                    <div>
-                      <span className="text-[10px] text-gray-400 block uppercase font-bold">Transmission</span>
-                      <span>{selectedVehicle.transmission}</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Call Seller CTA */}
-                <a 
-                  href="tel:+919426041999"
-                  className="mt-auto w-full py-4 text-center bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold shadow-lg transition active:scale-[0.98] text-base cursor-pointer"
-                >
-                  Contact Prakash Auto: +91 94260 41999
-                </a>
               </div>
             </div>
           </div>
+
+          {/* Spacer to push button down */}
+          <div className="flex-1 min-h-5" />
+
+          {/* CTA Button */}
+          <a 
+            href="tel:+919426041999"
+            className="py-2  md:py-3 text-center bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold shadow-lg shadow-blue-500/20"
+          >
+             Contact Prakash Auto
+          </a>
+
         </div>
+      </div>
+    </div>
+  </div>
+</div>
       )}
     </>
   );

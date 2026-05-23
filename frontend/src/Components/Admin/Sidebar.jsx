@@ -8,6 +8,7 @@ import {
   Settings,
   X,
   Shield,
+  CarFront,
 } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 import { Link, Outlet } from 'react-router-dom';
@@ -81,7 +82,8 @@ function Sidebar() {
           <div className="flex-1 py-6">
             <NavItem active to="/admin/dashboard" icon={LayoutDashboard} label="Dashboard" expanded={sidebarOpen} />
             <NavItem to="/admin/messages" icon={Users} label="Messages" expanded={sidebarOpen} />
-            <NavItem to="/admin/products" icon={Package} label="Products" expanded={sidebarOpen} />
+            <NavItem to="/admin/manageVehicles" icon={CarFront} label="Vehicles" expanded={sidebarOpen} />
+            <NavItem to="/admin/soldVehicles" icon={Car} label="Sold Vehicles" expanded={sidebarOpen} />
           </div>
 
 

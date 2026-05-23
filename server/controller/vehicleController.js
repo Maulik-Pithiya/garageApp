@@ -3,7 +3,7 @@ import Vehicle from "../model/vehicleModel.js";
 // Create a new vehicle listing
 export const createVehicle = async (req, res) => {
     try {
-        const { name, location, price, kilometers, fuelType, passingYear, transmission, category, images } = req.body;
+        const { name, location, price, kilometers, fuelType, passingYear, transmission, category, images, ownerName, ownerContact, isSold } = req.body;
 
         // Simple validation
         if (!name || !location || !price || !kilometers || !fuelType || !passingYear || !transmission || !images || !Array.isArray(images) || images.length === 0) {
@@ -20,7 +20,10 @@ export const createVehicle = async (req, res) => {
             transmission,
             category: category || "four-wheel",
             images,
-            visible: req.body.visible !== undefined ? req.body.visible : true
+            visible: req.body.visible !== undefined ? req.body.visible : true,
+            ownerName: ownerName || "",
+            ownerContact: ownerContact || "",
+            isSold: isSold !== undefined ? isSold : false
         });
 
         const savedVehicle = await newVehicle.save();
