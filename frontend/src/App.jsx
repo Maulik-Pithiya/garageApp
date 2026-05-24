@@ -13,6 +13,7 @@ import Test from './Components/Test';
 import DashBoard from "./Components/Admin/DashBoard";
 import Messages from "./Components/Admin/Messages";
 import AdminProduct from "./Components/Admin/AdminProduct";
+import ManageProducts from "./Components/Admin/ManageProducts";
 
 function App() {
 
@@ -34,6 +35,7 @@ function App() {
           <Route path="messages" element={<Messages />} />
           <Route path="manageVehicles" element={<AdminProduct isSoldSection={false} />} />
           <Route path="soldVehicles" element={<AdminProduct isSoldSection={true} />} />
+          <Route path="manageProducts" element={<ManageProducts />} />
         </Route>
 
       </Routes>

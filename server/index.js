@@ -4,6 +4,7 @@ import configDotenv from "dotenv";
 import mongoose from "mongoose";
 import route from "./routes/userRoutes.js";
 import vehicleRoute from "./routes/vehicleRoutes.js";
+import productRoute from "./routes/productRoutes.js";
 import cors from 'cors'
 
 
@@ -27,6 +28,7 @@ mongoose
 
 app.use("/api", route);
 app.use("/api", vehicleRoute);
+app.use("/api", productRoute);
 
 
 

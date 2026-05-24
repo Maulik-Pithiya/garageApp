@@ -84,6 +84,7 @@ function Sidebar() {
             <NavItem to="/admin/messages" icon={Users} label="Messages" expanded={sidebarOpen} />
             <NavItem to="/admin/manageVehicles" icon={CarFront} label="Vehicles" expanded={sidebarOpen} />
             <NavItem to="/admin/soldVehicles" icon={Car} label="Sold Vehicles" expanded={sidebarOpen} />
+            <NavItem to="/admin/manageProducts" icon={Package} label="Products" expanded={sidebarOpen} />
           </div>
 
 
